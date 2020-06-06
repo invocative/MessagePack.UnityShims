@@ -307,6 +307,29 @@ namespace UnityEngine
             this.z = z;
             this.w = w;
         }
+        /// <summary>
+        ///   <para>The dot product between two rotations.</para>
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        public static float Dot(Quaternion a, Quaternion b)
+        {
+            return (float) ((double) a.x * (double) b.x + (double) a.y * (double) b.y + (double) a.z * (double) b.z + (double) a.w * (double) b.w);
+        }
+        private static bool IsEqualUsingDot(float dot)
+        {
+            return (double) dot > 0.999998986721039;
+        }
+
+        public static bool operator ==(Quaternion lhs, Quaternion rhs)
+        {
+            return Quaternion.IsEqualUsingDot(Quaternion.Dot(lhs, rhs));
+        }
+
+        public static bool operator !=(Quaternion lhs, Quaternion rhs)
+        {
+            return !(lhs == rhs);
+        }
     }
 
     [MessagePackObject]
