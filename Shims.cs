@@ -11,13 +11,15 @@ using MessagePack;
 
 namespace UnityEngine
 {
+    using System;
+    using System.Globalization;
+    using System.Runtime.CompilerServices;
+
     [MessagePackObject]
     public struct Vector2
     {
-        [Key(0)]
-        public float x;
-        [Key(1)]
-        public float y;
+        [Key(0)] public float x;
+        [Key(1)] public float y;
 
         [SerializationConstructor]
         public Vector2(float x, float y)
@@ -25,6 +27,131 @@ namespace UnityEngine
             this.x = x;
             this.y = y;
         }
+
+        private static readonly Vector2 zeroVector = new Vector2(0.0f, 0.0f);
+        private static readonly Vector2 oneVector = new Vector2(1f, 1f);
+        private static readonly Vector2 upVector = new Vector2(0.0f, 1f);
+        private static readonly Vector2 downVector = new Vector2(0.0f, -1f);
+        private static readonly Vector2 leftVector = new Vector2(-1f, 0.0f);
+        private static readonly Vector2 rightVector = new Vector2(1f, 0.0f);
+
+        private static readonly Vector2 positiveInfinityVector =
+            new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+
+        private static readonly Vector2 negativeInfinityVector =
+            new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+
+        public const float kEpsilon = 1E-05f;
+        public const float kEpsilonNormalSqrt = 1E-15f;
+
+        public float this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return this.x;
+                    case 1:
+                        return this.y;
+                    default:
+                        throw new IndexOutOfRangeException("Invalid Vector2 index!");
+                }
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        this.x = value;
+                        break;
+                    case 1:
+                        this.y = value;
+                        break;
+                    default:
+                        throw new IndexOutOfRangeException("Invalid Vector2 index!");
+                }
+            }
+        }
+
+        public void Set(float newX, float newY)
+        {
+            this.x = newX;
+            this.y = newY;
+        }
+        /// <summary>
+        ///   <para>Multiplies two vectors component-wise.</para>
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        [MethodImpl((MethodImplOptions)256)]
+        public static Vector2 Scale(Vector2 a, Vector2 b)
+        {
+            return new Vector2(a.x * b.x, a.y * b.y);
+        }
+
+        /// <summary>
+        ///   <para>Multiplies every component of this vector by the same component of scale.</para>
+        /// </summary>
+        /// <param name="scale"></param>
+        [MethodImpl((MethodImplOptions)256)]
+        public void Scale(Vector2 scale)
+        {
+            this.x *= scale.x;
+            this.y *= scale.y;
+        }
+
+        /// <summary>
+        ///   <para>Returns a formatted string for this vector.</para>
+        /// </summary>
+        /// <param name="format">A numeric format string.</param>
+        /// <param name="formatProvider">An object that specifies culture-specific formatting.</param>
+        public override string ToString()
+        {
+            return this.ToString((string)null, (IFormatProvider)CultureInfo.InvariantCulture.NumberFormat);
+        }
+
+        /// <summary>
+        ///   <para>Returns a formatted string for this vector.</para>
+        /// </summary>
+        /// <param name="format">A numeric format string.</param>
+        /// <param name="formatProvider">An object that specifies culture-specific formatting.</param>
+        public string ToString(string format)
+        {
+            return this.ToString(format, (IFormatProvider)CultureInfo.InvariantCulture.NumberFormat);
+        }
+
+        /// <summary>
+        ///   <para>Returns a formatted string for this vector.</para>
+        /// </summary>
+        /// <param name="format">A numeric format string.</param>
+        /// <param name="formatProvider">An object that specifies culture-specific formatting.</param>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (string.IsNullOrEmpty(format))
+                format = "F1";
+            return String.Format("({0}, {1})", (object)this.x.ToString(format, formatProvider), (object)this.y.ToString(format, formatProvider));
+        }
+
+        public override int GetHashCode()
+        {
+            return this.x.GetHashCode() ^ this.y.GetHashCode() << 2;
+        }
+
+        /// <summary>
+        ///   <para>Returns true if the given vector is exactly equal to this vector.</para>
+        /// </summary>
+        /// <param name="other"></param>
+        public override bool Equals(object other)
+        {
+            return other is Vector2 other1 && this.Equals(other1);
+        }
+
+        public bool Equals(Vector2 other)
+        {
+            return (double)this.x == (double)other.x && (double)this.y == (double)other.y;
+        }
+
     }
 
     [MessagePackObject]
@@ -48,6 +175,93 @@ namespace UnityEngine
         public static Vector3 operator *(Vector3 a, float d)
         {
             return new Vector3(a.x * d, a.y * d, a.z * d);
+        }
+        public override int GetHashCode()
+        {
+            return this.x.GetHashCode() ^ this.y.GetHashCode() << 2 ^ this.z.GetHashCode() >> 2;
+        }
+
+        /// <summary>
+        ///   <para>Returns true if the given vector is exactly equal to this vector.</para>
+        /// </summary>
+        /// <param name="other"></param>
+        public override bool Equals(object other)
+        {
+            return other is Vector3 other1 && this.Equals(other1);
+        }
+
+        public bool Equals(Vector3 other)
+        {
+            return (double)this.x == (double)other.x && (double)this.y == (double)other.y && (double)this.z == (double)other.z;
+        }
+        public static Vector3 operator +(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+        }
+
+        public static Vector3 operator -(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+        }
+
+        public static Vector3 operator -(Vector3 a)
+        {
+            return new Vector3(-a.x, -a.y, -a.z);
+        }
+
+        public static Vector3 operator *(float d, Vector3 a)
+        {
+            return new Vector3(a.x * d, a.y * d, a.z * d);
+        }
+
+        public static Vector3 operator /(Vector3 a, float d)
+        {
+            return new Vector3(a.x / d, a.y / d, a.z / d);
+        }
+
+        public static bool operator ==(Vector3 lhs, Vector3 rhs)
+        {
+            float num1 = lhs.x - rhs.x;
+            float num2 = lhs.y - rhs.y;
+            float num3 = lhs.z - rhs.z;
+            return (double)num1 * (double)num1 + (double)num2 * (double)num2 + (double)num3 * (double)num3 < 9.99999943962493E-11;
+        }
+
+        public static bool operator !=(Vector3 lhs, Vector3 rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        /// <summary>
+        ///   <para>Returns a formatted string for this vector.</para>
+        /// </summary>
+        /// <param name="format">A numeric format string.</param>
+        /// <param name="formatProvider">An object that specifies culture-specific formatting.</param>
+        public override string ToString()
+        {
+            return this.ToString((string)null, (IFormatProvider)CultureInfo.InvariantCulture.NumberFormat);
+        }
+
+        /// <summary>
+        ///   <para>Returns a formatted string for this vector.</para>
+        /// </summary>
+        /// <param name="format">A numeric format string.</param>
+        /// <param name="formatProvider">An object that specifies culture-specific formatting.</param>
+        public string ToString(string format)
+        {
+            return this.ToString(format, (IFormatProvider)CultureInfo.InvariantCulture.NumberFormat);
+        }
+
+        /// <summary>
+        ///   <para>Returns a formatted string for this vector.</para>
+        /// </summary>
+        /// <param name="format">A numeric format string.</param>
+        /// <param name="formatProvider">An object that specifies culture-specific formatting.</param>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (string.IsNullOrEmpty(format))
+                format = "F1";
+            return String.Format("({0}, {1}, {2})", (object)this.x.ToString(format, formatProvider), (object)this.y.ToString(format, formatProvider), (object)this.z.ToString(format, formatProvider));
         }
     }
 
