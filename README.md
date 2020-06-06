@@ -1,2 +1,0 @@
-# MessagePack.UnityShims
-Upgraded shims
