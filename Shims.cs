@@ -14,6 +14,68 @@ namespace UnityEngine
     using System;
     using System.Globalization;
     using System.Runtime.CompilerServices;
+    [Flags]
+    public enum RigidbodyConstraints2D
+    {
+        /// <summary>
+        ///   <para>No constraints.</para>
+        /// </summary>
+        None = 0,
+        /// <summary>
+        ///   <para>Freeze motion along the X-axis.</para>
+        /// </summary>
+        FreezePositionX = 1,
+        /// <summary>
+        ///   <para>Freeze motion along the Y-axis.</para>
+        /// </summary>
+        FreezePositionY = 2,
+        /// <summary>
+        ///   <para>Freeze rotation along the Z-axis.</para>
+        /// </summary>
+        FreezeRotation = 4,
+        /// <summary>
+        ///   <para>Freeze motion along the X-axis and Y-axis.</para>
+        /// </summary>
+        FreezePosition = FreezePositionY | FreezePositionX, // 0x00000003
+        /// <summary>
+        ///   <para>Freeze rotation and motion along all axes.</para>
+        /// </summary>
+        FreezeAll = FreezePosition | FreezeRotation, // 0x00000007
+    }
+    /// <summary>
+    ///   <para>Controls how collisions are detected when a Rigidbody2D moves.</para>
+    /// </summary>
+    public enum CollisionDetectionMode2D
+    {
+        /// <summary>
+        ///   <para>When a Rigidbody2D moves, only collisions at the new position are detected.</para>
+        /// </summary>
+        Discrete = 0,
+        /// <summary>
+        ///   <para>This mode is obsolete.  You should use Discrete mode.</para>
+        /// </summary>
+        [Obsolete("Enum member CollisionDetectionMode2D.None has been deprecated. Use CollisionDetectionMode2D.Discrete instead (UnityUpgradable) -> Discrete", true)] 
+        None = 0,
+        /// <summary>
+        ///   <para>Ensures that all collisions are detected when a Rigidbody2D moves.</para>
+        /// </summary>
+        Continuous = 1,
+    }
+    public enum RigidbodyInterpolation2D
+    {
+        /// <summary>
+        ///   <para>Do not apply any smoothing to the object's movement.</para>
+        /// </summary>
+        None,
+        /// <summary>
+        ///   <para>Smooth movement based on the object's positions in previous frames.</para>
+        /// </summary>
+        Interpolate,
+        /// <summary>
+        ///   <para>Smooth an object's movement based on an estimate of its position in the next frame.</para>
+        /// </summary>
+        Extrapolate,
+    }
 
     [MessagePackObject]
     public struct Vector2
