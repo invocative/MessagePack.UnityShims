@@ -90,12 +90,12 @@ namespace UnityEngine
             this.y = y;
         }
 
-        private static readonly Vector2 zeroVector = new Vector2(0.0f, 0.0f);
-        private static readonly Vector2 oneVector = new Vector2(1f, 1f);
-        private static readonly Vector2 upVector = new Vector2(0.0f, 1f);
-        private static readonly Vector2 downVector = new Vector2(0.0f, -1f);
-        private static readonly Vector2 leftVector = new Vector2(-1f, 0.0f);
-        private static readonly Vector2 rightVector = new Vector2(1f, 0.0f);
+        public static readonly Vector2 Zero = new Vector2(0.0f, 0.0f);
+        public static readonly Vector2 One = new Vector2(1f, 1f);
+        public static readonly Vector2 Up = new Vector2(0.0f, 1f);
+        public static readonly Vector2 Down = new Vector2(0.0f, -1f);
+        public static readonly Vector2 Left = new Vector2(-1f, 0.0f);
+        public static readonly Vector2 Right = new Vector2(1f, 0.0f);
 
         private static readonly Vector2 positiveInfinityVector =
             new Vector2(float.PositiveInfinity, float.PositiveInfinity);
@@ -225,6 +225,9 @@ namespace UnityEngine
         public float y;
         [Key(2)]
         public float z;
+
+        public static readonly Vector3 Zero = new Vector3(0.0f, 0.0f, 0.0f);
+        public static readonly Vector3 One = new Vector3(1f, 1f, 1f);
 
         [SerializationConstructor]
         public Vector3(float x, float y, float z)
@@ -360,6 +363,8 @@ namespace UnityEngine
         public float z;
         [Key(3)]
         public float w;
+
+        public static readonly Quaternion Zero = new Quaternion(0, 0, 0,0);
 
         [SerializationConstructor]
         public Quaternion(float x, float y, float z, float w)
