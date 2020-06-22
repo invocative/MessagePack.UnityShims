@@ -54,7 +54,7 @@ namespace UnityEngine
         /// <summary>
         ///   <para>This mode is obsolete.  You should use Discrete mode.</para>
         /// </summary>
-        [Obsolete("Enum member CollisionDetectionMode2D.None has been deprecated. Use CollisionDetectionMode2D.Discrete instead (UnityUpgradable) -> Discrete", true)] 
+        [Obsolete("Enum member CollisionDetectionMode2D.None has been deprecated. Use CollisionDetectionMode2D.Discrete instead (UnityUpgradable) -> Discrete", true)]
         None = 0,
         /// <summary>
         ///   <para>Ensures that all collisions are detected when a Rigidbody2D moves.</para>
@@ -328,6 +328,106 @@ namespace UnityEngine
                 format = "F1";
             return String.Format("({0}, {1}, {2})", (object)this.x.ToString(format, formatProvider), (object)this.y.ToString(format, formatProvider), (object)this.z.ToString(format, formatProvider));
         }
+        /// <summary>
+        ///   <para>Dot Product of two vectors.</para>
+        /// </summary>
+        /// <param name="lhs"></param>
+        /// <param name="rhs"></param>
+        [MethodImpl((MethodImplOptions)256)]
+        public static float Dot(Vector3 lhs, Vector3 rhs)
+        {
+            return (float)((double)lhs.x * (double)rhs.x + (double)lhs.y * (double)rhs.y + (double)lhs.z * (double)rhs.z);
+        }
+
+        /// <summary>
+        ///   <para>Projects a vector onto another vector.</para>
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="onNormal"></param>
+        public static Vector3 Project(Vector3 vector, Vector3 onNormal)
+        {
+            float num1 = Vector3.Dot(onNormal, onNormal);
+            if ((double)num1 < (double)float.Epsilon)
+                return Vector3.Zero;
+            float num2 = Vector3.Dot(vector, onNormal);
+            return new Vector3(onNormal.x * num2 / num1, onNormal.y * num2 / num1, onNormal.z * num2 / num1);
+        }
+
+        /// <summary>
+        ///   <para>Projects a vector onto a plane defined by a normal orthogonal to the plane.</para>
+        /// </summary>
+        /// <param name="planeNormal">The direction from the vector towards the plane.</param>
+        /// <param name="vector">The location of the vector above the plane.</param>
+        /// <returns>
+        ///   <para>The location of the vector on the plane.</para>
+        /// </returns>
+        public static Vector3 ProjectOnPlane(Vector3 vector, Vector3 planeNormal)
+        {
+            float num1 = Vector3.Dot(planeNormal, planeNormal);
+            if ((double)num1 < (double)float.Epsilon)
+                return vector;
+            float num2 = Vector3.Dot(vector, planeNormal);
+            return new Vector3(vector.x - planeNormal.x * num2 / num1, vector.y - planeNormal.y * num2 / num1, vector.z - planeNormal.z * num2 / num1);
+        }
+
+        /// <summary>
+        ///   <para>Returns the angle in degrees between from and to.</para>
+        /// </summary>
+        /// <param name="from">The vector from which the angular difference is measured.</param>
+        /// <param name="to">The vector to which the angular difference is measured.</param>
+        /// <returns>
+        ///   <para>The angle in degrees between the two vectors.</para>
+        /// </returns>
+        public static float Angle(Vector3 from, Vector3 to)
+        {
+            float num = (float)Math.Sqrt(@from.sqrMagnitude * (double)to.sqrMagnitude);
+            return num < 1.00000000362749E-15 ? 0.0f : (float)Math.Acos(Clamp(Dot(from, to) / num, -1f, 1f)) * 57.29578f;
+        }
+
+        private static float Clamp(float value, float min, float max)
+        {
+            if ((double) value < (double) min)
+                value = min;
+            else if ((double) value > (double) max)
+                value = max;
+            return value;
+        }
+
+        private static float Sign(float f)
+        {
+            return (double) f >= 0.0 ? 1f : -1f;
+        }
+
+        [IgnoreMember]
+        private float sqrMagnitude => (float) ((double) this.x * (double) this.x + (double) this.y * (double) this.y + (double) this.z * (double) this.z);
+        /// <summary>
+        ///   <para>Returns the signed angle in degrees between from and to.</para>
+        /// </summary>
+        /// <param name="from">The vector from which the angular difference is measured.</param>
+        /// <param name="to">The vector to which the angular difference is measured.</param>
+        /// <param name="axis">A vector around which the other vectors are rotated.</param>
+        public static float SignedAngle(Vector3 from, Vector3 to, Vector3 axis)
+        {
+            float num1 = Vector3.Angle(from, to);
+            float num2 = (float)((double)from.y * (double)to.z - (double)from.z * (double)to.y);
+            float num3 = (float)((double)from.z * (double)to.x - (double)from.x * (double)to.z);
+            float num4 = (float)((double)from.x * (double)to.y - (double)from.y * (double)to.x);
+            float num5 = Sign((float)((double)axis.x * (double)num2 + (double)axis.y * (double)num3 + (double)axis.z * (double)num4));
+            return num1 * num5;
+        }
+
+        /// <summary>
+        ///   <para>Returns the distance between a and b.</para>
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        public static float Distance(Vector3 a, Vector3 b)
+        {
+            float num1 = a.x - b.x;
+            float num2 = a.y - b.y;
+            float num3 = a.z - b.z;
+            return (float)Math.Sqrt((double)num1 * (double)num1 + (double)num2 * (double)num2 + (double)num3 * (double)num3);
+        }
     }
 
     [MessagePackObject]
@@ -364,7 +464,7 @@ namespace UnityEngine
         [Key(3)]
         public float w;
 
-        public static readonly Quaternion Zero = new Quaternion(0, 0, 0,0);
+        public static readonly Quaternion Zero = new Quaternion(0, 0, 0, 0);
 
         [SerializationConstructor]
         public Quaternion(float x, float y, float z, float w)
@@ -381,11 +481,11 @@ namespace UnityEngine
         /// <param name="b"></param>
         public static float Dot(Quaternion a, Quaternion b)
         {
-            return (float) ((double) a.x * (double) b.x + (double) a.y * (double) b.y + (double) a.z * (double) b.z + (double) a.w * (double) b.w);
+            return (float)((double)a.x * (double)b.x + (double)a.y * (double)b.y + (double)a.z * (double)b.z + (double)a.w * (double)b.w);
         }
         private static bool IsEqualUsingDot(float dot)
         {
-            return (double) dot > 0.999998986721039;
+            return (double)dot > 0.999998986721039;
         }
 
         public static bool operator ==(Quaternion lhs, Quaternion rhs)
