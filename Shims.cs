@@ -386,20 +386,20 @@ namespace UnityEngine
 
         private static float Clamp(float value, float min, float max)
         {
-            if ((double) value < (double) min)
+            if ((double)value < (double)min)
                 value = min;
-            else if ((double) value > (double) max)
+            else if ((double)value > (double)max)
                 value = max;
             return value;
         }
 
         private static float Sign(float f)
         {
-            return (double) f >= 0.0 ? 1f : -1f;
+            return (double)f >= 0.0 ? 1f : -1f;
         }
 
         [IgnoreMember]
-        private float sqrMagnitude => (float) ((double) this.x * (double) this.x + (double) this.y * (double) this.y + (double) this.z * (double) this.z);
+        private float sqrMagnitude => (float)((double)this.x * (double)this.x + (double)this.y * (double)this.y + (double)this.z * (double)this.z);
         /// <summary>
         ///   <para>Returns the signed angle in degrees between from and to.</para>
         /// </summary>
@@ -524,6 +524,102 @@ namespace UnityEngine
             this.b = b;
             this.a = a;
         }
+
+
+
+        #region statics
+
+        public override bool Equals(object other) => other is Color other1 && this.Equals(other1);
+
+        public bool Equals(Color other) => this.r.Equals(other.r) && this.g.Equals(other.g) && this.b.Equals(other.b) && this.a.Equals(other.a);
+
+        public static Color operator +(Color a, Color b) => new Color(a.r + b.r, a.g + b.g, a.b + b.b, a.a + b.a);
+
+        public static Color operator -(Color a, Color b) => new Color(a.r - b.r, a.g - b.g, a.b - b.b, a.a - b.a);
+
+        public static Color operator *(Color a, Color b) => new Color(a.r * b.r, a.g * b.g, a.b * b.b, a.a * b.a);
+
+        public static Color operator *(Color a, float b) => new Color(a.r * b, a.g * b, a.b * b, a.a * b);
+
+        public static Color operator *(float b, Color a) => new Color(a.r * b, a.g * b, a.b * b, a.a * b);
+
+        public static Color operator /(Color a, float b) => new Color(a.r / b, a.g / b, a.b / b, a.a / b);
+
+        /// <summary>
+        ///   <para>Linearly interpolates between colors a and b by t.</para>
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="t"></param>
+        public static Color LerpUnclamped(Color a, Color b, float t)
+            => new Color(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, a.a + (b.a - a.a) * t);
+
+        internal Color RGBMultiplied(float multiplier)
+            => new Color(this.r * multiplier, this.g * multiplier, this.b * multiplier, this.a);
+
+        internal Color AlphaMultiplied(float multiplier)
+            => new Color(this.r, this.g, this.b, this.a * multiplier);
+
+        internal Color RGBMultiplied(Color multiplier)
+            => new Color(this.r * multiplier.r, this.g * multiplier.g, this.b * multiplier.b, this.a);
+
+        /// <summary>
+        ///   <para>Solid red. RGBA is (1, 0, 0, 1).</para>
+        /// </summary>
+        public static Color red => new Color(1f, 0.0f, 0.0f, 1f);
+
+        /// <summary>
+        ///   <para>Solid green. RGBA is (0, 1, 0, 1).</para>
+        /// </summary>
+        public static Color green => new Color(0.0f, 1f, 0.0f, 1f);
+
+        /// <summary>
+        ///   <para>Solid blue. RGBA is (0, 0, 1, 1).</para>
+        /// </summary>
+        public static Color blue => new Color(0.0f, 0.0f, 1f, 1f);
+
+        /// <summary>
+        ///   <para>Solid white. RGBA is (1, 1, 1, 1).</para>
+        /// </summary>
+        public static Color white => new Color(1f, 1f, 1f, 1f);
+
+        /// <summary>
+        ///   <para>Solid black. RGBA is (0, 0, 0, 1).</para>
+        /// </summary>
+        public static Color black => new Color(0.0f, 0.0f, 0.0f, 1f);
+
+        /// <summary>
+        ///   <para>Yellow. RGBA is (1, 0.92, 0.016, 1), but the color is nice to look at!</para>
+        /// </summary>
+        public static Color yellow => new Color(1f, 0.9215686f, 0.01568628f, 1f);
+
+        /// <summary>
+        ///   <para>Cyan. RGBA is (0, 1, 1, 1).</para>
+        /// </summary>
+        public static Color cyan => new Color(0.0f, 1f, 1f, 1f);
+
+        /// <summary>
+        ///   <para>Magenta. RGBA is (1, 0, 1, 1).</para>
+        /// </summary>
+        public static Color magenta => new Color(1f, 0.0f, 1f, 1f);
+
+        /// <summary>
+        ///   <para>Gray. RGBA is (0.5, 0.5, 0.5, 1).</para>
+        /// </summary>
+        public static Color gray => new Color(0.5f, 0.5f, 0.5f, 1f);
+
+        /// <summary>
+        ///   <para>English spelling for gray. RGBA is the same (0.5, 0.5, 0.5, 1).</para>
+        /// </summary>
+        public static Color grey => new Color(0.5f, 0.5f, 0.5f, 1f);
+
+        /// <summary>
+        ///   <para>Completely transparent. RGBA is (0, 0, 0, 0).</para>
+        /// </summary>
+        public static Color clear => new Color(0.0f, 0.0f, 0.0f, 0.0f);
+
+
+        #endregion
     }
 
     [MessagePackObject]
@@ -538,15 +634,9 @@ namespace UnityEngine
         [Key(1)]
         public Vector3 size
         {
-            get
-            {
-                return this.extents * 2f;
-            }
+            get => this.extents * 2f;
 
-            set
-            {
-                this.extents = value * 0.5f;
-            }
+            set => this.extents = value * 0.5f;
         }
 
         [SerializationConstructor]
@@ -606,10 +696,7 @@ namespace UnityEngine
         public Keyframe[] keys;
 
         [IgnoreMember]
-        public int length
-        {
-            get { return this.keys.Length; }
-        }
+        public int length => this.keys.Length;
 
         [Key(1)]
         public WrapMode postWrapMode;
