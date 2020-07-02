@@ -14,6 +14,7 @@ namespace UnityEngine
     using System;
     using System.Globalization;
     using System.Runtime.CompilerServices;
+    public class SerializeFieldAttribute : Attribute {}
     [Flags]
     public enum RigidbodyConstraints2D
     {
